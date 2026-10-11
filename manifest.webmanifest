@@ -1,0 +1,13 @@
+{
+  "name": "FitTrack — Fitness Progress",
+  "short_name": "FitTrack",
+  "description": "Private, offline-friendly fitness and running progress tracker.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f8f4",
+  "theme_color": "#132d26",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

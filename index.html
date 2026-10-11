@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#132d26">
+<meta name="description" content="A private, offline-friendly fitness and running progress tracker.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<title>FitTrack — Your fitness, in context</title>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" aria-label="FitTrack home"><span class="brand-mark">F</span><span>fittrack<span class="brand-dot">.</span></span></a>
+  <div class="top-actions"><span id="today-label" class="date-label"></span><button id="install-btn" class="btn btn-quiet hidden">Install app</button></div>
+</header>
+<main>
+  <section class="hero">
+    <div><p class="eyebrow">YOUR PERSONAL FITNESS LOG</p><h1>Small steps.<br><em>Stronger trends.</em></h1><p class="hero-copy">A calmer way to track training, recovery and the habits that add up.</p></div>
+    <div class="hero-stat"><span class="stat-label">CURRENT STREAK</span><strong id="streak">0 <small>days</small></strong><span class="stat-sub">Days with a saved check-in</span></div>
+  </section>
+  <nav class="tabs" aria-label="Main navigation">
+    <button class="tab active" data-page="overview">Overview</button><button class="tab" data-page="log">Daily log</button><button class="tab" data-page="progress">Progress</button><button class="tab" data-page="settings">Goals</button>
+  </nav>
+  <section id="page-overview" class="page active">
+    <div class="section-head"><div><p class="eyebrow">AT A GLANCE</p><h2>Your week so far</h2></div><button class="btn btn-primary" id="quick-log">＋ Log today</button></div>
+    <div class="metric-grid">
+      <article class="metric-card"><span class="metric-icon">↘</span><span class="metric-label">7-day avg. weight</span><strong id="avg-weight">—</strong><span class="metric-foot" id="weight-foot">Add weigh-ins to begin</span></article>
+      <article class="metric-card"><span class="metric-icon">♡</span><span class="metric-label">Activity minutes</span><strong id="activity-mins">0 <small>min</small></strong><span class="metric-foot">This calendar week</span></article>
+      <article class="metric-card"><span class="metric-icon">☾</span><span class="metric-label">Average sleep</span><strong id="avg-sleep">—</strong><span class="metric-foot">Last 7 logged nights</span></article>
+      <article class="metric-card"><span class="metric-icon">✓</span><span class="metric-label">Habit completion</span><strong id="habit-rate">—</strong><span class="metric-foot">Last 7 days with entries</span></article>
+    </div>
+    <div class="content-grid">
+      <article class="panel chart-panel"><div class="panel-head"><div><h3>Weight trend</h3><p>Daily readings are noise; the trend is information.</p></div><span class="tag">30 days</span></div><div class="chart-wrap"><canvas id="weight-chart" aria-label="Weight trend chart"></canvas><div id="weight-empty" class="empty-chart">Add a weight in Daily log to see your trend.</div></div></article>
+      <article class="panel"><div class="panel-head"><div><h3>Today’s checklist</h3><p>Progress, not perfection.</p></div><span id="check-count" class="tag">0 / 6</span></div><div id="today-checklist" class="checklist"></div><button class="btn btn-outline full" id="edit-today">Edit today’s log</button></article>
+    </div>
+    <article class="panel week-panel"><div class="panel-head"><div><h3>Weekly activity</h3><p>Build a repeatable rhythm, not a heroic week.</p></div><span id="weekly-runs" class="tag">0 sessions</span></div><div id="week-bars" class="week-bars"></div></article>
+    <p class="privacy-note">🔒 Your entries stay in this browser on this device. Export backups regularly; clearing browser data can erase your log.</p>
+  </section>
+  <section id="page-log" class="page">
+    <div class="section-head"><div><p class="eyebrow">DAILY CHECK-IN</p><h2 id="log-title">Log your day</h2><p class="section-copy">A two-minute snapshot is enough. Leave fields blank when you don’t know.</p></div><div class="date-control"><label for="log-date">Date</label><input type="date" id="log-date"></div></div>
+    <form id="log-form">
+      <div class="form-grid">
+        <article class="panel form-panel"><h3>Body & recovery</h3><div class="field-grid">
+          <label>Morning weight <span>kg</span><input id="f-weight" type="number" min="25" max="300" step="0.1" placeholder="e.g. 74.8"></label>
+          <label>Sleep duration <span>hours</span><input id="f-sleep" type="number" min="0" max="24" step="0.25" placeholder="e.g. 7.5"></label>
+          <label>Resting heart rate <span>bpm</span><input id="f-rhr" type="number" min="25" max="240" placeholder="e.g. 58"></label>
+          <label>Energy <span>1–5</span><select id="f-energy"><option value="">Choose…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>Muscle soreness <span>1–5</span><select id="f-soreness"><option value="">Choose…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>Digestion<select id="f-digestion"><option value="Normal">Normal</option><option value="Bloating">Bloating</option><option value="Gas">Gas</option><option value="Loose stools">Loose stools</option><option value="Multiple symptoms">Multiple symptoms</option><option value="Other">Other</option></select></label>
+        </div></article>
+        <article class="panel form-panel"><h3>Movement & training</h3><div class="field-grid">
+          <label>Activity type<select id="f-activity"><option value="Rest / walking">Rest / walking</option><option>Easy run</option><option>Quality run / intervals</option><option>Long run</option><option>Strength training</option><option>Cycling</option><option>Yoga / mobility</option><option>Other</option></select></label>
+          <label>Activity duration <span>minutes</span><input id="f-minutes" type="number" min="0" max="1440" placeholder="e.g. 40"></label>
+          <label>Run distance <span>km</span><input id="f-distance" type="number" min="0" max="200" step="0.01" placeholder="e.g. 5.2"></label>
+          <label>Average pace <span>min/km</span><input id="f-pace" placeholder="e.g. 5:45"></label>
+          <label>Average heart rate <span>bpm</span><input id="f-avg-hr" type="number" min="25" max="240" placeholder="e.g. 145"></label>
+          <label>Steps <span>count</span><input id="f-steps" type="number" min="0" max="100000" step="100" placeholder="e.g. 8200"></label>
+        </div></article>
+        <article class="panel form-panel"><h3>Nutrition & habits</h3><div class="field-grid">
+          <label>Protein <span>grams</span><input id="f-protein" type="number" min="0" max="500" placeholder="e.g. 125"></label>
+          <label>Water <span>litres</span><input id="f-water" type="number" min="0" max="20" step="0.1" placeholder="e.g. 2.5"></label>
+        </div><div id="habit-fields" class="habit-fields"></div></article>
+        <article class="panel form-panel"><h3>Notes & context</h3><label class="full-label">Anything worth remembering<textarea id="f-notes" rows="5" placeholder="What felt good? Any unusual stress, meals, symptoms or training conditions?"></textarea></label><p class="hint">Use notes to explain unusual days rather than judging them.</p></article>
+      </div>
+      <div class="form-actions"><button type="button" class="btn btn-outline" id="clear-form">Clear fields</button><button class="btn btn-primary" type="submit">Save daily log <span>→</span></button></div>
+      <p id="save-message" class="save-message" role="status"></p>
+    </form>
+  </section>
+  <section id="page-progress" class="page">
+    <div class="section-head"><div><p class="eyebrow">ZOOM OUT</p><h2>Your progress</h2><p class="section-copy">Review patterns over time. One number never tells the whole story.</p></div><button id="export-csv" class="btn btn-outline">Export CSV ↓</button></div>
+    <div class="content-grid progress-grid">
+      <article class="panel"><div class="panel-head"><div><h3>Weight history</h3><p>Daily values and 7-day average</p></div></div><div class="chart-wrap tall"><canvas id="progress-weight-chart"></canvas><div id="progress-weight-empty" class="empty-chart">No weight data yet.</div></div></article>
+      <article class="panel"><div class="panel-head"><div><h3>Running distance</h3><p>Daily distance recorded</p></div></div><div class="chart-wrap tall"><canvas id="distance-chart"></canvas><div id="distance-empty" class="empty-chart">Log a run to see your distance.</div></div></article>
+    </div>
+    <article class="panel"><div class="panel-head"><div><h3>Recent entries</h3><p>Your latest saved days</p></div><button class="btn btn-quiet" id="export-json">Backup JSON</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Weight</th><th>Activity</th><th>Minutes</th><th>Steps</th><th>Sleep</th><th></th></tr></thead><tbody id="entries-table"></tbody></table></div><p id="entries-empty" class="empty-table">Your saved entries will appear here.</p></article>
+    <article class="panel review-panel"><h3>Four-week review prompts</h3><div class="review-prompts"><p><span>01</span> Is weight or waist moving in the intended direction?</p><p><span>02</span> Are comparable runs feeling easier or getting faster?</p><p><span>03</span> Are strength, energy, sleep and digestion holding steady?</p><p><span>04</span> What is one small adjustment for the next block?</p></div></article>
+  </section>
+  <section id="page-settings" class="page">
+    <div class="section-head"><div><p class="eyebrow">YOUR BASELINE</p><h2>Goals & preferences</h2><p class="section-copy">Start with sensible defaults, then personalize them as you learn.</p></div></div>
+    <form id="goals-form" class="panel goals-panel">
+      <div class="field-grid">
+        <label>Current reference weight <span>kg</span><input id="g-weight" type="number" min="25" max="300" step="0.1"></label>
+        <label>Daily protein target <span>g</span><input id="g-protein" type="number" min="0" max="400"></label>
+        <label>Weekly aerobic minutes <span>min</span><input id="g-aerobic" type="number" min="0" max="2000"></label>
+        <label>Daily step target <span>steps</span><input id="g-steps" type="number" min="0" max="50000" step="500"></label>
+        <label>10K goal time <span>optional</span><input id="g-10k" placeholder="e.g. 49:00"></label>
+        <label>Goal focus<select id="g-focus"><option>Balanced body composition and running</option><option>Fat loss and waist reduction</option><option>Running performance</option><option>Strength and lean muscle</option><option>Maintenance and general health</option></select></label>
+      </div>
+      <h3>Daily habits to track</h3><p class="hint">Choose the habits you can realistically repeat.</p><div id="goal-habits" class="goal-habits"></div>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Save goals</button></div><p id="goal-message" class="save-message" role="status"></p>
+    </form>
+    <article class="panel"><h3>Data & privacy</h3><p class="muted">FitTrack stores logs locally in your browser. There is no account, analytics, advertising, cloud sync or external API in this starter app. On a shared device, other people with access to your browser profile may be able to see the data.</p><div class="privacy-actions"><label class="btn btn-outline file-button">Import JSON backup<input id="import-json" type="file" accept="application/json" hidden></label><button id="delete-data" class="btn btn-danger">Delete all data</button></div></article>
+    <p class="privacy-note">Fitness tracking is for general wellness, not diagnosis. Avoid treating heart-rate or recovery metrics as medical advice. Increase training gradually and seek medical advice for concerning symptoms.</p>
+  </section>
+</main>
+<footer><span>FITTRACK</span><span>Built for consistency, not perfection.</span></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>
